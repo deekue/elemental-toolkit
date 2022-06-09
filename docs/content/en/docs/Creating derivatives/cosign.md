@@ -5,14 +5,14 @@ linkTitle: "Cosign"
 weight: 2
 date: 2020-11-02
 description: >
-  How we use cosign in elemental-toolkit
+  Secure supply chain
 ---
 
 [Cosign](https://github.com/sigstore/cosign) is a project that signs and verifies containers and stores the signatures on OCI registries.
 
 You can check the cosign [github repo](https://github.com/sigstore/cosign) for more information.
 
-In elemental-toolkit we sign every container that we generate as part of our publish process so the signature can be verified during package installation with luet or during deploy/upgrades from a deployed system to verify that the containers have not been altered in any way since their build.
+In elemental-toolkit we sign every OCI artifact that we generate as part of our publish process so the signature can be verified during package installation with luet or during deploy/upgrades from a deployed system to verify that the containers have not been altered in any way since their build.
 
 Currently cosign provides 2 methods for signing and verifying.
 
@@ -30,6 +30,45 @@ When using luet-cosign as part of `luet install` you need to set `COSIGN_EXPERIM
 
 ## Derivatives
 
+## Signing a container with cosign
+
+When building a derivative which is a standard container image, it is enough to run `cosign sign`. Refer to the cosign documentation on how to achieve that in detail.
+
+With github actions, it is possible to have the keyless signing process running in the workflow, for example:
+
+```yaml
+name: build
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      id-token: write  # Note: Required for OIDC support
+    steps:
+      - name: Install Cosign
+        uses: sigstore/cosign-installer@main
+      # ... build your image here ...
+      - name: Sign the images with GitHub OIDC Token
+        run: cosign sign image:tag
+        env:
+          COSIGN_EXPERIMENTAL: 1 # Note: Required for keyless
+```
+
+The signing process should be returning more or less:
+
+```
+Generating ephemeral keys...
+Retrieving signed certificate...
+        Note that there may be personally identifiable information associated with this signed artifact.
+        This may include the email address associated with the account with which you authenticate.
+        This information will be used for signing this artifact and will be stored in public transparency logs and cannot be removed later.
+Successfully verified SCT...
+tlog entry created with index: 2611430
+Pushing signature to: ....
+```
+
+The cosign verification now can be enabled with the `elemental-cli` with the ```cosign``` flag or by enabling it in the `elemental` config file.
+
+## Signing packages with luet
 If building a derivative, you can also sign and verify you final artifacts with the use of [luet-cosign](https://github.com/rancher-sandbox/luet-cosign).
 
 As keyless is only possible to do in an CI environment (as it needs an OIDC token) you would need to set up private/public signature and verification.
