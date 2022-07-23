@@ -1,13 +1,13 @@
 #!/sbin/openrc-run
 
-supervise_daemon_args="--stdout /var/log/cos-setup-network.log --stderr /var/log/cos-setup-network.log"
-
 depend() {
   after net
   provide cos-setup-network
 }
 
 start() {
-  elemental run-stage network
+  elemental run-stage network \
+    >>  /var/log/cos-setup-network.log \
+    2>> /var/log/cos-setup-network.log
   eend 0
 }

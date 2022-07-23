@@ -1,12 +1,13 @@
 #!/sbin/openrc-run
 
-supervise_daemon_args="--stdout /var/log/cos-setup-boot.log --stderr /var/log/cos-setup-network.log"
 
 depend() {
   provide cos-setup-boot
 }
 
 start() {
-  elemental run-stage boot
+  elemental run-stage boot \
+    >>  /var/log/cos-setup-boot.log \
+    2>> /var/log/cos-setup-boot.log
   eend 0
 }
