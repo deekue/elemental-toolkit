@@ -1,5 +1,7 @@
 #!/sbin/openrc-run
 
+supervise_daemon_args="--stdout /var/log/cos-setup-network.log --stderr /var/log/cos-setup-network.log"
+
 depend() {
   after net
   provide cos-setup-network
