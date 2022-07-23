@@ -6,8 +6,8 @@ depend() {
 }
 
 start() {
-  elemental run-stage boot \
-    >>  /var/log/cos-setup-boot.log \
-    2>> /var/log/cos-setup-boot.log
+  elemental \
+    --logfile /var/log/cos-setup-boot.log \
+    run-stage boot 
   eend 0
 }

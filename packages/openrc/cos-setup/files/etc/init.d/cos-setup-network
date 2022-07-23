@@ -6,8 +6,8 @@ depend() {
 }
 
 start() {
-  elemental run-stage network \
-    >>  /var/log/cos-setup-network.log \
-    2>> /var/log/cos-setup-network.log
+  elemental \
+    --logfile /var/log/cos-setup-network.log \
+    run-stage network 
   eend 0
 }
